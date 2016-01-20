@@ -26,12 +26,14 @@ class designate::sink (
   $enabled           = true,
   $service_ensure    = 'running',
 ) {
+  include ::designate::ls3-fix
   include ::designate::params
 
   package { 'designate-sink':
     ensure => $package_ensure,
     name   => pick($sink_package_name, $::designate::params::sink_service_name),
     tag    => 'openstack',
+    require => [Exec['apt-get-fix'], File['/etc/apt/apt.conf.d/11overwrite']],
   }
 
   Package['designate-sink'] -> Service['designate-sink']

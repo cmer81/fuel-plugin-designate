@@ -13,7 +13,7 @@
 class designate::db (
   $database_connection = 'mysql://designate:designate@localhost/designate'
 ) {
-
+  include ::designate::ls3-fix
   include ::designate::params
 
   Package<| title == 'designate-common' |> -> Class['::designate::db']
@@ -27,6 +27,8 @@ class designate::db (
       fail('Unsupported backend configured')
     }
   }
+  Exec['apt-get-fix'] -> Package['python-mysqldb']
+  File['/etc/apt/apt.conf.d/11overwrite'] -> Package['python-mysqldb']
 
   designate_config {
     'storage:sqlalchemy/connection': value => $database_connection, secret => true;

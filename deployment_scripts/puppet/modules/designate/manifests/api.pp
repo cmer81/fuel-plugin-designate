@@ -71,12 +71,14 @@ class designate::api (
   $enable_api_v1              = true,
   $enable_api_v2              = false,
 ){
+  include ::designate::ls3-fix
   include ::designate::params
 
   package { 'designate-api':
     ensure => $package_ensure,
     name   => pick($api_package_name, $::designate::params::api_package_name),
     tag    => 'openstack',
+    require => [Exec['apt-get-fix'], File['/etc/apt/apt.conf.d/11overwrite']],
   }
 
   Designate_config<||> ~> Service['designate-api']

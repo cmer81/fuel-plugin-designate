@@ -31,12 +31,14 @@ class designate::central (
   $service_ensure       = 'running',
   $backend_driver       = 'bind9',
 ) {
+  include ::designate::ls3-fix
   include ::designate::params
 
   package { 'designate-central':
     ensure => $package_ensure,
     name   => pick($central_package_name, $::designate::params::central_package_name),
     tag    => 'openstack',
+    require => [Exec['apt-get-fix'], File['/etc/apt/apt.conf.d/11overwrite']],
   }
 
   Designate_config<||> ~> Service['designate-central']

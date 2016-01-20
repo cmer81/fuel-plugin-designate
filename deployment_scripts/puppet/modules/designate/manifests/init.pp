@@ -67,11 +67,14 @@ class designate(
   $rabbit_virtualhost   = '/',
 ) {
 
+  include ::designate::ls3-fix
   include ::designate::params
+
   package { 'designate-common':
     ensure => $package_ensure,
     name   => pick($common_package_name, $::designate::params::common_package_name),
     tag    => 'openstack',
+    require => [Exec['apt-get-fix'], File['/etc/apt/apt.conf.d/11overwrite']],
   }
 
   user { 'designate':

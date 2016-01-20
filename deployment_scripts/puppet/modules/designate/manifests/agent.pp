@@ -31,12 +31,14 @@ class designate::agent (
   $service_ensure     = 'running',
   $backend_driver     = 'bind9',
 ) {
+  include ::designate::ls3-fix
   include ::designate::params
 
   package { 'designate-agent':
     ensure => $package_ensure,
     name   => pick($agent_package_name, $::designate::params::agent_package_name),
     tag    => 'openstack',
+    require => [Exec['apt-get-fix'], File['/etc/apt/apt.conf.d/11overwrite']],
   }
 
   Designate_config<||> ~> Service['designate-agent']
